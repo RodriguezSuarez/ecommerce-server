@@ -1,0 +1,47 @@
+.- Iniciar servidor
+
+node server.js
+
+
+
+------------------------------------------------------------------------
+.- Agregar Producto:
+
+POST /api/products HTTP/1.1 
+Content-Type: application/json
+
+{
+   "title": "Nuevo Producto",
+   "description": "Descripción del nuevo producto",
+   "code": "NP001",
+   "price": 150,
+   "stock": 50,
+   "category": "Categoría Ejemplo",
+   "thumbnails": ["url_imagen_1.jpg", "url_imagen_2.jpg"]
+}
+------------------------------------------------------------------------
+.- Crear Carrito:
+
+POST /api/carts HTTP/1.1 
+------------------------------------------------------------------------
+.- Agregar Producto al Carrito:
+
+POST /api/carts/1/product/2 HTTP/1.1 
+------------------------------------------------------------------------
+.- Listar Productos en Carrito:
+
+GET /api/carts/1 HTTP/1.1 
+------------------------------------------------------------------------
+.- Actualizar Producto:
+
+PUT /api/products/1 HTTP/1.1 
+Content-Type: application/json
+
+{
+   "title": "Producto Actualizado",
+   "price": 120,
+}
+------------------------------------------------------------------------
+.- Eliminar Producto:
+
+DELETE /api/products/1 HTTP/1.1

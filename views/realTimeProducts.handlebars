@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos en Tiempo Real</title>
+</head>
+
+<body>
+  <h1>Productos en Tiempo Real</h1>
+
+  <ul id="productList"></ul>
+
+  <h2>Agregar Producto</h2>
+  <form id="addProductForm">
+    <input type="text" id="title" placeholder="Título" required />
+    <input type="text" id="description" placeholder="Descripción" required />
+    <input type="text" id="code" placeholder="Código" required />
+    <input type="number" id="price" placeholder="Precio" required />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <input type="text" id="category" placeholder="Categoría" required />
+    <button type="submit">Agregar Producto</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io(); // Conectar al servidor WebSocket
+
+    const productList = document.getElementById('productList');
+
+    // Función para actualizar la lista de productos en el DOM
+    function updateProductList(products) {
+      productList.innerHTML = ''; // Limpiar la lista actual
+      products.forEach(product => {
+        const li = document.createElement('li');
+        li.textContent = `${product.title} - ${product.price} - ${product.code}`;
+        productList.appendChild(li);
+      });
+    }
+
+    // Escuchar el evento 'updateProducts' desde el servidor
+    socket.on('updateProducts', (products) => {
+      updateProductList(products); // Actualizar la lista cuando se recibe un nuevo conjunto de productos
+    });
+
+    // Manejar el formulario para agregar un producto
+    document.getElementById('addProductForm').addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevenir el envío del formulario por defecto
+
+      const newProduct = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        code: document.getElementById('code').value,
+        price: parseFloat(document.getElementById('price').value),
+        stock: parseInt(document.getElementById('stock').value),
+        category: document.getElementById('category').value,
+      };
+
+      socket.emit('addProduct', newProduct); // Emitir evento para agregar producto
+
+      // Limpiar los campos del formulario
+      document.getElementById('addProductForm').reset();
+    });
+
+    // Función para eliminar un producto (puedes implementar esta parte según tus necesidades)
+    function deleteProduct(productId) {
+      socket.emit('deleteProduct', productId); // Emitir evento para eliminar producto
+    }
+  </script>
+</body>
+
+</html>

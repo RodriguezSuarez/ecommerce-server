@@ -1,3 +1,4 @@
+<!-- views/realTimeProducts.handlebars -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -62,11 +63,6 @@
       // Limpiar los campos del formulario
       document.getElementById('addProductForm').reset();
     });
-
-    // Función para eliminar un producto (puedes implementar esta parte según tus necesidades)
-    function deleteProduct(productId) {
-      socket.emit('deleteProduct', productId); // Emitir evento para eliminar producto
-    }
   </script>
 </body>
 

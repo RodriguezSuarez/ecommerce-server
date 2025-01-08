@@ -3,7 +3,8 @@ const { engine } = require('express-handlebars');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-const ProductManager = require('./ProductManager');
+const viewsRouter = require('./routes/views'); // Importar el router de vistas
+const ProductManager = require('./ProductManager'); // Asegúrate de tener este archivo como se definió anteriormente
 
 const app = express();
 const server = http.createServer(app);
@@ -12,24 +13,22 @@ const io = socketIo(server); // Inicializa Socket.IO
 const productManager = new ProductManager(); // Instancia de ProductManager
 
 // Configuración de Handlebars
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
+    partialsDir: path.join(__dirname, 'views', 'partials'),
+    extname: '.handlebars'
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware para parsear JSON
+// Middleware para parsear JSON y formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Para manejar formularios
 app.use(express.static(path.join(__dirname, 'public'))); // Para archivos estáticos
 
-// Ruta raíz
-app.get('/', (req, res) => {
-    res.render('home'); // Renderiza la vista 'home.handlebars'
-});
-
-// Ruta para productos en tiempo real
-app.get('/realtimeproducts', (req, res) => {
-    res.render('realTimeProducts'); // Renderiza la vista 'realTimeProducts.handlebars'
-});
+// Usar el router de vistas
+app.use('/', viewsRouter); // Montar el router en la ruta raíz
 
 // Manejo de WebSocket
 io.on('connection', (socket) => {

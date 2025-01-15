@@ -3,12 +3,17 @@ const { engine } = require('express-handlebars');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-const viewsRouter = require('./routes/views'); // Importar el router de vistas
-const ProductManager = require('./ProductManager'); // Asegúrate de tener este archivo como se definió anteriormente
+const connectDB = require('./db'); // Importar conexión a la base de datos
+const viewsRouter = require('./routes/views'); 
+const productsRouter = require('./routes/products'); 
+const cartsRouter = require('./routes/carts'); 
+const ProductManager = require('./ProductManager'); // Importar ProductManager
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server); // Inicializa Socket.IO
+
+connectDB(); // Conectar a MongoDB
 
 const productManager = new ProductManager(); // Instancia de ProductManager
 
@@ -24,11 +29,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware para parsear JSON y formularios
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Para manejar formularios
-app.use(express.static(path.join(__dirname, 'public'))); // Para archivos estáticos
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Usar el router de vistas
-app.use('/', viewsRouter); // Montar el router en la ruta raíz
+// Usar los routers
+app.use('/api/products', productsRouter); 
+app.use('/api/carts', cartsRouter); 
+app.use('/', viewsRouter); 
 
 // Manejo de WebSocket
 io.on('connection', (socket) => {
